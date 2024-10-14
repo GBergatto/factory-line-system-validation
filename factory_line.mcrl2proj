@@ -2,7 +2,7 @@
  <spec>factory_line_spec.mcrl2</spec>
  <properties>
   <property>R1  Picked item is eventually ejected</property>
-  <property>TODO    R2  After N defects the item is trashed without reworking</property>
+  <property>R2  After N defects the item is trashed without reworking</property>
   <property>R3  moveToOutput only after itemOk</property>
   <property>R4  Item evaluation only after item detection</property>
   <property>R5a  After an item is detected on input it halts and cannot start until the item is gone</property>

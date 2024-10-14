@@ -1,1 +1,17 @@
-true
+(
+  [
+    true* .
+    alarm
+  ]
+  mu X.(
+    [!unalarm]X &&
+    <true>true
+  )
+)
+
+=>
+
+[
+  true* .
+  alarm
+] false

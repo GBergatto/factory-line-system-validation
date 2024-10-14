@@ -1,0 +1,12 @@
+nu X(n: Nat = 0).(
+  [take(input)]X(0) &&
+  [itemDefect]X(n + 1) &&
+  [!(take(input) || itemDefect)]X(n) &&
+  (
+    val (n == 10) => mu Y.(
+      [!moveToTrash]Y &&
+      <true>true &&
+      [itemDefect]false
+    )
+  )
+)
