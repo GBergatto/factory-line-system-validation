@@ -1,23 +1,20 @@
-sort Location = struct inputL | resetL;
-	Belt = struct input | reset | upgrade;
+sort Belt = struct input | reset | upgrade;
 	Mode = struct normal | emergency;
 
 act start, stop, itemDetected: Belt;
-	pickItem: Location;
-	placeItem, itemOk, itemDefect, moveToOutput, moveToReset, moveToTrash,
+	itemOk, itemDefect, moveToOutput, moveToTrash,
 	alarm, unalarm;
-act provideInput, provideOutput, provideTrash;
-act inputItem, upgradeItem, acceptItem, reworkItem, rejectItem, trashItem, outputItem, resetItem;
+act put, take, toBelt, fromBelt: Belt;
 
 proc Arm(m: Mode, isHoldingItem: Bool) = 
 	unalarm . Arm(normal, isHoldingItem) +
 	alarm . Arm(emergency, isHoldingItem) +
 	(m == normal)
 		-> (isHoldingItem)
-			-> placeItem . Arm(m, false)
-			<> sum l:Location. pickItem(l) . Arm(m, true);
+			-> put(upgrade) . Arm(m, false)
+			<> (take(input) + take(reset)) . Arm(m, true);
+			% WARNING: this won't satisfy the requirements of always taking from reset if possible
 
-% start input conveyor
 proc ConveyorBelt(m: Mode, b: Belt, isMoving: Bool, interrupted: Bool) =
 	% Try to allow `alarm` between detect and stop?
 	% Try to remove these bounds and see what this does with the number of states.
@@ -37,32 +34,21 @@ proc Checker(m: Mode, n: Nat) =
 	(m == emergency) -> unalarm . Checker(normal, n) +
 	(m == normal) -> (
 		alarm . Checker(emergency, n) +
-		itemOk . moveToOutput . Checker(normal, 0) +
-		(n == 10)											% N = 10, requirement requires equality, so ==.
-			-> (rejectItem . Checker(normal, 0))
-			<> (reworkItem . Checker(normal, n + 1))
+		take(upgrade) . itemOk . moveToOutput . Checker(normal, 0) + % itemOk/Defect should come from outside? => use comm{take | itemOk -> _ } but then take will be synchronized in different ways
+		take(upgrade) . itemDefect . (n >= 10)
+			-> (moveToTrash . Checker(normal, 0))
+			<> (put(reset) . Checker(normal, n + 1))
 	);
-			
 
 init
 	allow(
-		{},
-
+		{toBelt, fromBelt, alarm, unalarm, itemOk, itemDefect, itemDetected, moveToOutput, moveToTrash},
 		comm(
 			{
-				provideInput | start(input) -> inputItem,
-				placeItem | start(upgrade) -> upgradeItem,
-
-				itemOk | moveToOutput -> acceptItem,
-				itemDefect | moveToTrash -> rejectItem,
-				itemDefect | moveToReset -> reworkItem,
-
-				acceptItem | provideOutput -> outputItem,
-				rejectItem | provideTrash -> trashItem,
-				reworkItem | start(reset) -> resetItem
+				put | start -> toBelt,
+				stop | take -> fromBelt
 			},
-
-			ConveyorBelt(normal, input, false, false) ||
+			ConveyorBelt(normal, input, true, false) ||
 			ConveyorBelt(normal, reset, false, false) ||
 			ConveyorBelt(normal, upgrade, false, false) ||
 			Arm(normal, false) || Checker(normal, 0)
