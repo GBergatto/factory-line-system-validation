@@ -1,5 +1,6 @@
 [
   true* .
+  itemDetected(upgrade) .
   !itemOk .
   moveToOutput
 ] false

@@ -1,6 +1,0 @@
-[
-  true* .
-  take(input) .
-  (!(moveToOutput || moveToTrash))* .
-  take(input)
-] false

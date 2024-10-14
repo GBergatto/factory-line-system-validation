@@ -1,10 +1,10 @@
 <root>
  <spec>factory_line_spec.mcrl2</spec>
  <properties>
-  <property>TODO    R1  Picked item is eventually ejected</property>
+  <property>R1  Picked item is eventually ejected</property>
   <property>TODO    R2  After N defects the item is trashed without reworking</property>
-  <property>TODO    R3  moveToOutput only after itemOk</property>
-  <property>TODO    R4  Item evaluation only after item detection</property>
+  <property>R3  moveToOutput only after itemOk</property>
+  <property>R4  Item evaluation only after item detection</property>
   <property>R5a  After an item is detected on input it halts and cannot start until the item is gone</property>
   <property>R5b  After an item is detected on reset it halts and cannot start until the item is gone</property>
   <property>R5c  After an item is detected on upgrade it halts and cannot start until the item is gone</property>
@@ -12,12 +12,11 @@
   <property>R6b  An item cannot be picked from a moving reset conveyor</property>
   <property>R7a  After detecting an item on the input conveyor that item is eventually picked up</property>
   <property>R7b  After detecting an item on the reset conveyor that item is eventually picked up</property>
-  <property>R8  An item must be trashed or accepted before a new item is taken from the input</property>
-  <property>R9  After picking up an item it will eventually be placed down</property>
-  <property>R10  An item will only be placed on an upgrade conveyor that is not moving</property>
-  <property>TODO    R11  An alarm makes all conveyors stop and forbids movement until unalarm</property>
-  <property>R12  No item can picked up if a previously placed item has not been put down yet</property>
-  <property>R13  Placing an item must be preceeded by picking up that item</property>
+  <property>R8  After picking up an item it will eventually be placed down</property>
+  <property>R9  An item will only be placed on an upgrade conveyor that is not moving</property>
+  <property>TODO    R10  An alarm makes all conveyors stop and forbids movement until unalarm</property>
+  <property>R11  No item can picked up if a previously placed item has not been put down yet</property>
+  <property>R12  Placing an item must be preceeded by picking up that item</property>
  </properties>
  <jittyc>false</jittyc>
  <linearisation_method>regular</linearisation_method>

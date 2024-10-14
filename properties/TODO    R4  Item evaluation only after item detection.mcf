@@ -1,5 +1,0 @@
-[
-  true* .
-  !itemDetected(upgrade) .
-  (itemOk || itemDefect)
-] false
