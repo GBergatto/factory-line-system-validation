@@ -1,0 +1,6 @@
+[
+  true* .
+  start(reset) .
+  (!(stop(reset)))* .
+  take(reset)
+] false

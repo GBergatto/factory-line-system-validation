@@ -1,0 +1,8 @@
+[
+  true* .
+  itemDetected(input)
+]
+mu X.(
+  [!take(input)]X &&
+  <true>true
+)

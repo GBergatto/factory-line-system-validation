@@ -1,0 +1,13 @@
+[
+  true* .
+  put(upgrade) .
+  (!(take(input) || take(reset)))* .
+  put(upgrade)
+] false
+
+&&
+
+[
+  (!(take(input) || take(reset)))* .
+  put(upgrade)
+] false

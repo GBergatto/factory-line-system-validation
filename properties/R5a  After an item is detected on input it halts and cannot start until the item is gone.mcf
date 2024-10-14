@@ -1,0 +1,14 @@
+[
+  true* .
+  itemDetected(input) .
+  !stop(input)
+] false
+
+&&
+
+[
+  true* .
+  stop(input) .
+  (!take(input))* .
+  start(input)
+] false

@@ -1,0 +1,6 @@
+[
+  true* .
+  start(upgrade).
+  (!stop(upgrade))* .
+  put(upgrade)
+] false

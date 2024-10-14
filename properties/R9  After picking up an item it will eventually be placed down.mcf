@@ -1,0 +1,8 @@
+[
+  true* .
+  (take(input) || take(reset))
+]
+mu X.(
+  [!put(upgrade)]X &&
+  <true>true
+)

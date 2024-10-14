@@ -1,0 +1,6 @@
+[
+  true* .
+  (take(input) || take(reset)) .
+  (!put(upgrade))* .
+  (take(input) || take(reset))
+] false

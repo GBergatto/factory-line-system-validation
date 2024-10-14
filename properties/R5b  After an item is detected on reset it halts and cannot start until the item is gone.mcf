@@ -1,0 +1,14 @@
+[
+  true* .
+  itemDetected(reset) .
+  !stop(reset)
+] false
+
+&&
+
+[
+  true* .
+  stop(reset) .
+  (!take(reset))* .
+  start(reset)
+] false

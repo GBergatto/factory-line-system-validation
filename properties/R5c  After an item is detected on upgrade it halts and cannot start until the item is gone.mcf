@@ -1,0 +1,14 @@
+[
+  true* .
+  itemDetected(upgrade) .
+  !stop(upgrade)
+] false
+
+&&
+
+[
+  true* .
+  stop(upgrade) .
+  (!take(upgrade))* .
+  start(upgrade)
+] false
