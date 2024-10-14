@@ -4,17 +4,18 @@ sort Location = struct inputL | resetL;
 
 act start, stop, itemDetected: Belt;
 	pickItem: Location;
-	placeItem, itemOk, itemDefect, moveToOutput, moveToReset, moveToTrash,
+	placeItem: Belt;
+	itemOk, itemDefect, moveToOutput, moveToReset, moveToTrash,
 	alarm, unalarm;
-act provideInput, provideOutput, provideTrash;
-act inputItem, upgradeItem, acceptItem, reworkItem, rejectItem, trashItem, outputItem, resetItem;
+act provideInput: Belt; provideOutput, provideTrash;
+act inputItem:Belt; upgradeItem: Belt; acceptItem, reworkItem, rejectItem, trashItem, outputItem, resetItem;
 
 proc Arm(m: Mode, isHoldingItem: Bool) = 
 	unalarm . Arm(normal, isHoldingItem) +
 	alarm . Arm(emergency, isHoldingItem) +
 	(m == normal)
 		-> (isHoldingItem)
-			-> placeItem . Arm(m, false)
+			-> placeItem(upgrade) . Arm(m, false)
 			<> sum l:Location. pickItem(l) . Arm(m, true);
 
 % start input conveyor
@@ -46,12 +47,13 @@ proc Checker(m: Mode, n: Nat) =
 
 init
 	allow(
-		{},
-
+		{inputItem, upgradeItem, acceptItem, rejectItem, reworkItem, outputItem, trashItem, resetItem},
 		comm(
 			{
-				provideInput | start(input) -> inputItem,
-				placeItem | start(upgrade) -> upgradeItem,
+				% instead of adding provide intput, we could have the first conveyor running in init
+				% and eventually a itemDetected will take place??
+				provideInput | start -> inputItem,
+				placeItem | start -> upgradeItem,
 
 				itemOk | moveToOutput -> acceptItem,
 				itemDefect | moveToTrash -> rejectItem,
@@ -59,7 +61,7 @@ init
 
 				acceptItem | provideOutput -> outputItem,
 				rejectItem | provideTrash -> trashItem,
-				reworkItem | start(reset) -> resetItem
+				reworkItem | start -> resetItem
 			},
 
 			ConveyorBelt(normal, input, false, false) ||
