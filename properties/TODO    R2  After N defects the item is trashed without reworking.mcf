@@ -9,7 +9,7 @@ nu X(n: Nat = 0).(
   &&
   
   (
-    val (n == 10) => mu Y.(
+    val (n == 1) => mu Y.(
       [!moveToTrash]Y &&
       <true>true &&
       [itemDetected(upgrade)]false

@@ -1,0 +1,10 @@
+[
+  true* .
+  alarm .
+  (!(
+    emergencyStopBelt(input) ||
+    emergencyStopBelt(reset) ||
+    emergencyStopBelt(upgrade)
+  ))* .
+  unalarm
+] false

@@ -1,0 +1,6 @@
+[
+  true* .
+  pickItem(upgrade) .
+  (!itemOk)* .
+  moveToOutput
+] false

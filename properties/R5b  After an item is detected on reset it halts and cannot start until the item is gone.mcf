@@ -1,10 +1,31 @@
 [
   true* .
   itemDetected(reset)
-]
-nu X.(
-  [!stopBelt(reset)]X &&
-  <true>true
+]nu Y.(
+  mu X.(
+    [!(
+      stopBelt(reset) ||
+      startBelt(upgrade) ||
+      startBelt(input) ||
+      stopBelt(upgrade) ||
+      stopBelt(input) ||
+      alarm
+    )]X
+    
+    &&
+    
+    [
+      startBelt(upgrade) ||
+      startBelt(input) ||
+      stopBelt(upgrade) ||
+      stopBelt(input) ||
+      alarm
+    ]Y
+    
+    &&
+    
+    <true>true
+  )
 )
 
 &&
