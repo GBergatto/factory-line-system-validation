@@ -2,7 +2,7 @@
   true* .
   itemDetected(input)
 ]
-mu X.(
-  [!take(input)]X &&
+nu X.(
+  [!pickItem(input)]X &&
   <true>true
 )

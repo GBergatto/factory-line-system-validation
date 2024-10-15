@@ -63,7 +63,7 @@ act acceptItem, trashItem, resetItem;
 
 proc Checker(n: Nat) =
 	acceptItem . Checker(0) +
-	(n >= 10)
+	(n >= 100)
 		-> (trashItem . Checker(0))
 		<> (resetItem . deliverItem(reset) . Checker(n + 1));
 
@@ -74,7 +74,7 @@ act startBelt, stopBelt, emergencyStopBelt, pickItem, placeItem: Belt;
 
 init
 	allow(
-		{startBelt, stopBelt, emergencyStopBelt, pickItem, placeItem, moveToOutput, moveToTrash, moveToReset, alarm, unalarm},
+		{startBelt, stopBelt, emergencyStopBelt, pickItem, placeItem, moveToOutput, moveToTrash, moveToReset, alarm, unalarm, itemDetected},
 		comm(
 			{
 				safeBeltStart | start -> startBelt,

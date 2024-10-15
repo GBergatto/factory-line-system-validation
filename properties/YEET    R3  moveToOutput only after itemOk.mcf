@@ -1,3 +1,7 @@
+true
+
+||
+
 [
   true* .
   itemDetected(upgrade) .

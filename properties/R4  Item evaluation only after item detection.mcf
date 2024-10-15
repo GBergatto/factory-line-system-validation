@@ -1,6 +1,6 @@
 [
   true* .
-  itemDetected(upgrade) .
-  (!(itemOk || itemDefect))* .
-  (start(reset) || moveToOutput || moveToTrash)
+  placeItem(upgrade) .
+  (!(itemDetected(upgrade)))* .
+  (moveToOutput || moveToTrash || moveToReset)
 ] false

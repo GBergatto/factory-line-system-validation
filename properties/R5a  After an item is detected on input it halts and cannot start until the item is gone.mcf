@@ -1,14 +1,17 @@
 [
   true* .
-  itemDetected(input) .
-  !stop(input)
-] false
+  itemDetected(input)
+]
+nu X.(
+  [!stopBelt(input)]X &&
+  <true>true
+)
 
 &&
 
 [
   true* .
-  stop(input) .
-  (!take(input))* .
-  start(input)
+  itemDetected(input) .
+  (!pickItem(input))* .
+  startBelt(input)
 ] false

@@ -1,6 +1,6 @@
 [
   true* .
-  take(input) .
+  pickItem(input) .
   (!(moveToOutput || moveToTrash))* .
-  take(input)
+  pickItem(input)
 ] false

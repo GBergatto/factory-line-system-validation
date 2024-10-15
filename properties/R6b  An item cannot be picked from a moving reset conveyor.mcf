@@ -1,6 +1,6 @@
 [
   true* .
-  start(reset) .
-  (!(stop(reset)))* .
-  take(reset)
+  startBelt(reset) .
+  (!(stopBelt(reset) || emergencyStopBelt(reset)))* .
+  pickItem(reset)
 ] false

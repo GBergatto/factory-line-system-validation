@@ -2,7 +2,7 @@
   true* .
   itemDetected(reset)
 ]
-mu X.(
-  [!take(reset)]X &&
+nu X.(
+  [!pickItem(reset)]X &&
   <true>true
 )

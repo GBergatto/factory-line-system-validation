@@ -1,6 +1,6 @@
 [
   true* .
-  (take(input) || take(reset)) .
-  (!put(upgrade))* .
-  (take(input) || take(reset))
+  (pickItem(input) || pickItem(reset)) .
+  (!placeItem(upgrade))* .
+  (pickItem(input) || pickItem(reset))
 ] false

@@ -1,14 +1,17 @@
 [
   true* .
-  itemDetected(upgrade) .
-  !stop(upgrade)
-] false
+  itemDetected(upgrade)
+]
+nu X.(
+  [!stopBelt(upgrade)]X &&
+  <true>true
+)
 
 &&
 
 [
   true* .
-  stop(upgrade) .
-  (!take(upgrade))* .
-  start(upgrade)
+  itemDetected(upgrade) .
+  (!pickItem(upgrade))* .
+  startBelt(upgrade)
 ] false

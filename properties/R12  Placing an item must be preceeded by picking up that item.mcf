@@ -1,13 +1,13 @@
 [
   true* .
-  put(upgrade) .
-  (!(take(input) || take(reset)))* .
-  put(upgrade)
+  placeItem(upgrade) .
+  (!(pickItem(input) || pickItem(reset)))* .
+  placeItem(upgrade)
 ] false
 
 &&
 
 [
-  (!(take(input) || take(reset)))* .
-  put(upgrade)
+  (!(pickItem(input) || pickItem(reset)))* .
+  placeItem(upgrade)
 ] false

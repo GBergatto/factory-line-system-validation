@@ -1,8 +1,8 @@
 [
   true* .
-  (take(input) || take(reset))
+  (pickItem(input) || pickItem(reset))
 ]
-mu X.(
-  [!put(upgrade)]X &&
+nu X.(
+  [!placeItem(upgrade)]X &&
   <true>true
 )
