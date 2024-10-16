@@ -2,7 +2,7 @@
  <spec>factory_line_spec.mcrl2</spec>
  <properties>
   <property>R1  Picked item is eventually ejected</property>
-  <property>TODO    R2  After N defects the item is trashed without reworking</property>
+  <property>R2  After N defects the item is trashed without reworking</property>
   <property>R3  moveToOutput only after itemOk</property>
   <property>R4  Item evaluation only after item detection</property>
   <property>R5a  After an item is detected on input it halts and cannot start until the item is gone</property>
@@ -18,6 +18,7 @@
   <property>R11  No item can picked up if a previously placed item has not been put down yet</property>
   <property>R12  Placing an item must be preceeded by picking up that item</property>
   <property>R10b  After an alarm no actions other than stopping belts can occur</property>
+  <property>nR2</property>
  </properties>
  <jittyc>false</jittyc>
  <linearisation_method>regular</linearisation_method>
