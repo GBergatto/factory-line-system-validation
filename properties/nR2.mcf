@@ -9,10 +9,33 @@ nu X(n: Nat = 1).(
   &&
   
   (
-    val (n == N(0)) => mu Y.(
-      [!(moveToTrash || moveToOutput)]Y &&
-      <true>true &&
-      [moveToReset]false
+    val (n == N(0)) => nu Y .(
+      mu Z .(
+        [!(
+          moveToTrash ||
+          startBelt(input) ||
+          startBelt(reset) ||
+          startBelt(upgrade) ||
+          stopBelt(input) ||
+          stopBelt(reset) ||
+          stopBelt(upgrade) ||
+          alarm
+        )]Z
+        &&
+        [
+          startBelt(input) ||
+          startBelt(reset) ||
+          startBelt(upgrade) ||
+          stopBelt(input) ||
+          stopBelt(reset) ||
+          stopBelt(upgrade) ||
+          alarm
+        ]Y
+        &&
+        <true>true
+        &&
+        [moveToReset]false
+      )
     )
   )
 )
