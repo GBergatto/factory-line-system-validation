@@ -1,0 +1,6 @@
+[
+  true* .
+  pickItem(input) .
+  (!(moveToOutput || moveToTrash))* .
+  pickItem(input)
+] false

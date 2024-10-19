@@ -1,0 +1,6 @@
+[
+  true* .
+  placeItem(upgrade) .
+  (!(itemDetected(upgrade)))* .
+  (moveToOutput || moveToTrash || moveToReset)
+] false

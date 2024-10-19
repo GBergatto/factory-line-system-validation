@@ -1,0 +1,30 @@
+[
+  true* .
+  itemDetected(reset)
+]
+nu Y.(
+  mu X.(
+    [!(
+      pickItem(reset) ||
+      startBelt(upgrade) ||
+      startBelt(input) ||
+      stopBelt(upgrade) ||
+      stopBelt(input) ||
+      alarm
+    )]X
+    
+    &&
+    
+    [
+      startBelt(upgrade) ||
+      startBelt(input) ||
+      stopBelt(upgrade) ||
+      stopBelt(input) ||
+      alarm
+    ]Y
+    
+    &&
+    
+    <true>true
+  )
+)

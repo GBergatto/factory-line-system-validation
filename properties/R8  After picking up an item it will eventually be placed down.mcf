@@ -1,0 +1,8 @@
+[
+  true* .
+  (pickItem(input) || pickItem(reset))
+]
+nu X.(
+  [!placeItem(upgrade)]X &&
+  <true>true
+)

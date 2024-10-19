@@ -1,0 +1,6 @@
+[
+  true* .
+  startBelt(input) .
+  (!(stopBelt(input) || emergencyStopBelt(input)))* .
+  pickItem(input)
+] false

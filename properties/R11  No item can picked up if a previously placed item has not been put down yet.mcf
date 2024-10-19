@@ -1,0 +1,6 @@
+[
+  true* .
+  (pickItem(input) || pickItem(reset)) .
+  (!placeItem(upgrade))* .
+  (pickItem(input) || pickItem(reset))
+] false
