@@ -1,85 +1,101 @@
-sort Belt = struct input | reset | upgrade;
-	Mode = struct normal | emergency;
+sort
+  Belt = struct input | reset | upgrade;
+  Mode = struct normal | emergency;
 
 map N: Nat -> Nat;
 var a: Nat;
 eqn N(a) = 2;
 
 
-
-act alarm, unalarm, safeOutput, safeTrash, safeReset;
-    safeBeltStart, safeBeltStop, unsafeBeltStop, safeBeltYield, safeBeltDeliver: Belt;
+act
+  alarm, unalarm, safeOutput, safeTrash, safeReset;
+  safeBeltStart, safeBeltStop, unsafeBeltStop, safeBeltYield, safeBeltDeliver: Belt;
 
 proc EmergencyHandler(m: Mode) =
-	((m == normal) -> alarm . EmergencyHandler(emergency)) +
-	((m == normal) -> safeOutput . EmergencyHandler(m)) +
-	((m == normal) -> safeTrash . EmergencyHandler(m)) +
-	((m == normal) -> safeReset . EmergencyHandler(m)) +
-	sum b:Belt . ((m == normal) -> safeBeltStop(b) . EmergencyHandler(m)) +
-	sum b:Belt . ((m == normal) -> safeBeltStart(b) . EmergencyHandler(m)) +
-	sum b:Belt . ((m == normal) -> safeBeltYield(b) . EmergencyHandler(m)) +
-	sum b:Belt . ((m == normal) -> safeBeltDeliver(b) . EmergencyHandler(m)) +
-    ((m == emergency) -> unsafeBeltStop(input) . unsafeBeltStop(upgrade) . unsafeBeltStop(reset) . unalarm . EmergencyHandler(normal));
+  ((m == normal) -> alarm      . EmergencyHandler(emergency)) +
+  ((m == normal) -> safeOutput . EmergencyHandler(m)) +
+  ((m == normal) -> safeTrash  . EmergencyHandler(m)) +
+  ((m == normal) -> safeReset  . EmergencyHandler(m)) +
+  sum b:Belt . ((m == normal) -> safeBeltStop(b)    . EmergencyHandler(m)) +
+  sum b:Belt . ((m == normal) -> safeBeltStart(b)   . EmergencyHandler(m)) +
+  sum b:Belt . ((m == normal) -> safeBeltYield(b)   . EmergencyHandler(m)) +
+  sum b:Belt . ((m == normal) -> safeBeltDeliver(b) . EmergencyHandler(m)) +
+  ((m == emergency) -> unsafeBeltStop(input)
+                       . unsafeBeltStop(upgrade)
+                       . unsafeBeltStop(reset)
+                       . unalarm
+                       . EmergencyHandler(normal));
 
 
-
-act deliverItem, pickFrom: Belt;
+act
+  deliverItem, pickFrom: Belt;
 
 proc Arm(isHoldingItem: Bool) =
-	(isHoldingItem)
-		-> deliverItem(upgrade) . Arm(false)
-		<> (pickFrom(input) + pickFrom(reset)) . Arm(true);
-		% WARNING: this won't satisfy the requirements of always taking from reset if possible
+  (isHoldingItem)
+    -> deliverItem(upgrade) . Arm(false)
+    <> (pickFrom(input) + pickFrom(reset)) . Arm(true);
 
 
-
-act start, stop, emergencyStop, receiveItem, yield, itemDetected: Belt;
+act
+  start, stop, emergencyStop, receiveItem, yield, itemDetected: Belt;
 
 proc ConveyorBelt(b: Belt, isMoving: Bool, hasItem: Bool, itemAtEnd: Bool) =
-	% Try to allow `alarm` between detect and stop?
-	% Try to remove these bounds and see what this does with the number of states.
-	((!isMoving             && !itemAtEnd) -> start(b)         . ConveyorBelt(b, true,     hasItem, itemAtEnd)) +
-	(( isMoving                          ) -> stop(b)          . ConveyorBelt(b, false,    hasItem, itemAtEnd)) +
-	(( true                              ) -> emergencyStop(b) . ConveyorBelt(b, false,    hasItem, itemAtEnd)) +
-	((!isMoving && !hasItem              ) -> receiveItem(b)   . ConveyorBelt(b, isMoving, true   , itemAtEnd)) +
-	((!isMoving             &&  itemAtEnd) -> yield(b)         . ConveyorBelt(b, isMoving, false  , false    )) +
-	(( isMoving &&  hasItem && !itemAtEnd) -> itemDetected(b)  . ConveyorBelt(b, isMoving, hasItem, true     ));
+  emergencyStop(b) . ConveyorBelt(b, false, hasItem, itemAtEnd) +
+  ((!isMoving && !itemAtEnd)
+    -> start(b) . ConveyorBelt(b, true, hasItem, itemAtEnd)) +
+  ((isMoving)
+    -> stop(b) . ConveyorBelt(b, false, hasItem, itemAtEnd)) +
+  ((!isMoving && !hasItem)
+    -> receiveItem(b) . ConveyorBelt(b, isMoving, true, itemAtEnd)) +
+  ((!isMoving && itemAtEnd)
+    -> yield(b) . ConveyorBelt(b, isMoving, false, false)) +
+  ((isMoving && hasItem && !itemAtEnd)
+    -> itemDetected(b) . ConveyorBelt(b, isMoving, hasItem, true));
 
 
-
-act acceptItem, trashItem, resetItem, itemOk, itemDefect;
+act
+  acceptItem, trashItem, resetItem, itemOk, itemDefect;
 
 proc Checker(n: Nat) =
-	pickFrom(upgrade) . itemOk . acceptItem . Checker(1) +
-	(n == N(0))
-		-> (pickFrom(upgrade) . itemDefect . trashItem . Checker(1))
-		<> (pickFrom(upgrade) . itemDefect . resetItem . deliverItem(reset) . Checker(n + 1));
+  pickFrom(upgrade) . itemOk . acceptItem . Checker(1) +
+  (n == N(0))
+    -> pickFrom(upgrade) . itemDefect . trashItem . Checker(1)
+    <> pickFrom(upgrade) . itemDefect . resetItem . deliverItem(reset) . Checker(n + 1);
 
 
-
-act moveToOutput, moveToTrash, moveToReset;
-act startBelt, stopBelt, emergencyStopBelt, pickItem, placeItem: Belt;
+act
+  moveToOutput, moveToTrash, moveToReset;
+  startBelt, stopBelt, emergencyStopBelt, pickItem, placeItem: Belt;
 
 init
-	allow(
-		{startBelt, stopBelt, emergencyStopBelt, pickItem, placeItem, moveToOutput, moveToTrash, moveToReset, alarm, unalarm, itemDetected, itemOk, itemDefect},
-		comm(
-			{
-				safeBeltStart | start -> startBelt,
-				safeBeltStop | stop -> stopBelt,
-				unsafeBeltStop | emergencyStop -> emergencyStopBelt,
-				safeBeltYield | yield | pickFrom -> pickItem,
-				safeBeltDeliver | deliverItem | receiveItem -> placeItem,
+  allow
+  (
+    {
+      startBelt, stopBelt, emergencyStopBelt,
+      pickItem, placeItem, moveToOutput,
+      moveToTrash, moveToReset, alarm,
+      unalarm, itemDetected, itemOk,
+      itemDefect
+    },
+    
+    comm
+    (
+      {
+        safeBeltStart | start -> startBelt,
+        safeBeltStop | stop -> stopBelt,
+        unsafeBeltStop | emergencyStop -> emergencyStopBelt,
+        safeBeltYield | yield | pickFrom -> pickItem,
+        safeBeltDeliver | deliverItem | receiveItem -> placeItem,
 
-				safeOutput | acceptItem -> moveToOutput,
-				safeTrash | trashItem -> moveToTrash,
-				safeReset | resetItem -> moveToReset
-			},
-			ConveyorBelt(input, true, true, false) ||
-			ConveyorBelt(reset, false, false, false) ||
-			ConveyorBelt(upgrade, false, false, false) ||
-			Arm(false) ||
-			Checker(1) ||
-			EmergencyHandler(normal)
-		)
-	);
+        safeOutput | acceptItem -> moveToOutput,
+        safeTrash | trashItem -> moveToTrash,
+        safeReset | resetItem -> moveToReset
+      },
+      ConveyorBelt(input, true, true, false) ||
+      ConveyorBelt(reset, false, false, false) ||
+      ConveyorBelt(upgrade, false, false, false) ||
+      Arm(false) ||
+      Checker(1) ||
+      EmergencyHandler(normal)
+    )
+  );

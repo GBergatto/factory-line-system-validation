@@ -4,9 +4,7 @@
   (!(pickItem(input) || pickItem(reset)))* .
   placeItem(upgrade)
 ] false
-
 &&
-
 [
   (!(pickItem(input) || pickItem(reset)))* .
   placeItem(upgrade)

@@ -14,11 +14,9 @@
   <property>R7b  After detecting an item on the reset conveyor that item is eventually picked up</property>
   <property>R8  After picking up an item it will eventually be placed down</property>
   <property>R9  An item will only be placed on an upgrade conveyor that is not moving</property>
-  <property>R10a  An alarm makes all conveyors stop</property>
+  <property>R10  An alarm makes all conveyors stop</property>
   <property>R11  No item can picked up if a previously placed item has not been put down yet</property>
   <property>R12  Placing an item must be preceeded by picking up that item</property>
-  <property>R10b  After an alarm no actions other than stopping belts can occur</property>
-  <property>nR2</property>
  </properties>
  <jittyc>false</jittyc>
  <linearisation_method>regular</linearisation_method>

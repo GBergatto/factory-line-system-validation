@@ -5,3 +5,10 @@
   !emergencyStopBelt(reset) .
   !emergencyStopBelt(upgrade)
 ] false
+&&
+[
+  true* .
+  alarm .
+  (!( exists b: Belt . emergencyStopBelt(b) ))* .
+  unalarm
+] false

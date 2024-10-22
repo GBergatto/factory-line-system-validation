@@ -1,14 +1,8 @@
-nu X(n: Nat = 1).(
-  [pickItem(input)]X(1) &&
-  [moveToReset]X(n + 1) &&
-  [!(
-    pickItem(input) ||
-    moveToReset
-  )]X(n)
-  
+nu X(n: Nat = 1).
+(
+  [pickItem(input)] X(1) &&
+  [moveToReset] X(n + 1) &&
+  [!(pickItem(input) || moveToReset)] X(n)
   &&
-  
-  (
-    val (n == N(0)) => [moveToReset]false
-  )
+  (val (n == N(0)) => [moveToReset]false)
 )
