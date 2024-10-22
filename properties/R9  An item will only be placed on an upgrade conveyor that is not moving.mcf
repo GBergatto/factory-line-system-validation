@@ -1,6 +1,6 @@
 [
   true* .
-  startBelt(upgrade).
+  startBelt(upgrade) .
   (!(stopBelt(upgrade) || emergencyStopBelt(upgrade)))* .
   placeItem(upgrade)
 ] false

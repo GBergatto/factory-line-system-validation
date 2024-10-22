@@ -9,6 +9,6 @@ nu X(n: Nat = 1).(
   &&
   
   (
-    val (n == N(0)) => [true* . moveToReset]false
+    val (n == N(0)) => [moveToReset]false
   )
 )
