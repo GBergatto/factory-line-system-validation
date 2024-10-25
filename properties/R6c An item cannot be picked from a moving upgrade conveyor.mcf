@@ -1,0 +1,6 @@
+[
+  true* .
+  startBelt(upgrade) .
+  (!(stopBelt(upgrade) || emergencyStopBelt(upgrade)))* .
+  pickItem(upgrade)
+] false

@@ -5,10 +5,16 @@ map N: Nat -> Nat;
 var a: Nat;
 eqn N(a) = 2;
 
+<<<<<<< Updated upstream
 
 
 act alarm, unalarm, safeOutput, safeTrash, safeReset;
     safeBeltStart, safeBeltStop, unsafeBeltStop, safeBeltYield, safeBeltDeliver: Belt;
+=======
+act
+  alarm, unalarm, safeOutput, safeTrash, safeReset;
+  safeBeltStart, safeBeltStop, unsafeBeltStop, safeBeltYield, safeBeltDeliver: Belt;
+>>>>>>> Stashed changes
 
 proc EmergencyHandler(m: Mode) =
 	((m == normal) -> alarm . EmergencyHandler(emergency)) +

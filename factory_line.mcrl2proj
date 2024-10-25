@@ -17,8 +17,13 @@
   <property>R10a  An alarm makes all conveyors stop</property>
   <property>R11  No item can picked up if a previously placed item has not been put down yet</property>
   <property>R12  Placing an item must be preceeded by picking up that item</property>
+<<<<<<< Updated upstream
   <property>R10b  After an alarm no actions other than stopping belts can occur</property>
   <property>nR2</property>
+=======
+  <property>R6c An item cannot be picked from a moving upgrade conveyor</property>
+  <property>R9b An item will only be placed on a reset conveyor that is not moving</property>
+>>>>>>> Stashed changes
  </properties>
  <jittyc>false</jittyc>
  <linearisation_method>regular</linearisation_method>
