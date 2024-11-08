@@ -32,7 +32,7 @@ act
 
 proc Arm(isHoldingItem: Bool) =
   (isHoldingItem)
-    -> deliverItem(upgrade) . Arm(false)
+    -> deliverItem(upgrade) . placeItem(upgrade) . Arm(false)
     <> (pickFrom(input) + pickFrom(reset)) . Arm(true);
 
 
@@ -42,13 +42,13 @@ act
 proc ConveyorBelt(b: Belt, isMoving: Bool, hasItem: Bool, itemAtEnd: Bool) =
   emergencyStop(b) . ConveyorBelt(b, false, hasItem, itemAtEnd) +
   ((!isMoving && !itemAtEnd)
-    -> start(b) . ConveyorBelt(b, true, hasItem, itemAtEnd)) +
+    -> start(b) . startBelt(b) . ConveyorBelt(b, true, hasItem, itemAtEnd)) +
   ((isMoving)
-    -> stop(b) . ConveyorBelt(b, false, hasItem, itemAtEnd)) +
+    -> stop(b) . stopBelt(b) . ConveyorBelt(b, false, hasItem, itemAtEnd)) +
   ((!isMoving && !hasItem)
     -> receiveItem(b) . ConveyorBelt(b, isMoving, true, itemAtEnd)) +
   ((!isMoving && itemAtEnd)
-    -> yield(b) . ConveyorBelt(b, isMoving, false, false)) +
+    -> yield(b) . placeItem(b) . ConveyorBelt(b, isMoving, false, false)) +
   ((isMoving && hasItem && !itemAtEnd)
     -> itemDetected(b) . ConveyorBelt(b, isMoving, hasItem, true));
 
@@ -57,45 +57,57 @@ act
   acceptItem, trashItem, resetItem, itemOk, itemDefect;
 
 proc Checker(n: Nat) =
-  pickFrom(upgrade) . itemOk . acceptItem . Checker(1) +
+  pickFrom(upgrade) . pickItem(upgrade) . itemOk . acceptItem . moveToOutput . Checker(1) +
   (n == N(0))
-    -> pickFrom(upgrade) . itemDefect . trashItem . Checker(1)
-    <> pickFrom(upgrade) . itemDefect . resetItem . deliverItem(reset) . Checker(n + 1);
+    -> pickFrom(upgrade) . itemDefect . trashItem . moveToTrash . Checker(1)
+    <> pickFrom(upgrade) . itemDefect . resetItem . moveToReset . deliverItem(reset) . placeItem(reset) . Checker(n + 1);
 
 
 act
   moveToOutput, moveToTrash, moveToReset;
+  sync_moveToOutput, sync_moveToTrash, sync_moveToReset;
   startBelt, stopBelt, emergencyStopBelt, pickItem, placeItem: Belt;
+  sync_startBelt, sync_stopBelt, sync_emergencyStopBelt, sync_pickItem, sync_placeItem: Belt;
 
 init
-  allow
-  (
-    {
-      startBelt, stopBelt, emergencyStopBelt,
-      pickItem, placeItem, moveToOutput,
-      moveToTrash, moveToReset, alarm,
-      unalarm, itemDetected, itemOk,
-      itemDefect
-    },
-    
-    comm
+%  hide
+%  (
+%    {
+%      sync_startBelt, sync_stopBelt, sync_emergencyStopBelt, sync_pickItem, sync_placeItem,
+%      sync_moveToOutput, sync_moveToTrash, sync_moveToReset
+%    },
+
+    allow
     (
       {
-        safeBeltStart | start -> startBelt,
-        safeBeltStop | stop -> stopBelt,
-        unsafeBeltStop | emergencyStop -> emergencyStopBelt,
-        safeBeltYield | yield | pickFrom -> pickItem,
-        safeBeltDeliver | deliverItem | receiveItem -> placeItem,
-
-        safeOutput | acceptItem -> moveToOutput,
-        safeTrash | trashItem -> moveToTrash,
-        safeReset | resetItem -> moveToReset
+        startBelt, stopBelt, emergencyStopBelt, pickItem, placeItem,
+        sync_startBelt, sync_stopBelt, sync_emergencyStopBelt, sync_pickItem, sync_placeItem,
+        moveToOutput, moveToTrash, moveToReset,
+        sync_moveToOutput, sync_moveToTrash, sync_moveToReset,
+        alarm, unalarm,
+        itemDetected,
+        itemOk, itemDefect
       },
-      ConveyorBelt(input, true, true, false) ||
-      ConveyorBelt(reset, false, false, false) ||
-      ConveyorBelt(upgrade, false, false, false) ||
-      Arm(false) ||
-      Checker(1) ||
-      EmergencyHandler(normal)
-    )
+      
+      comm
+      (
+        {
+          safeBeltStart | start -> sync_startBelt,
+          safeBeltStop | stop -> sync_stopBelt,
+          unsafeBeltStop | emergencyStop -> sync_emergencyStopBelt,
+          safeBeltYield | yield | pickFrom -> sync_pickItem,
+          safeBeltDeliver | deliverItem | receiveItem -> sync_placeItem,
+
+          safeOutput | acceptItem -> sync_moveToOutput,
+          safeTrash | trashItem -> sync_moveToTrash,
+          safeReset | resetItem -> sync_moveToReset
+        },
+        ConveyorBelt(input, true, true, false) ||
+        ConveyorBelt(reset, false, false, false) ||
+        ConveyorBelt(upgrade, false, false, false) ||
+        Arm(false) ||
+        Checker(1) ||
+        EmergencyHandler(normal)
+      )
+%    )
   );

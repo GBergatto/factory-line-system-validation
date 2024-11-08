@@ -2,9 +2,27 @@
   true* .
   (pickItem(input) || pickItem(reset))
 ]
-nu X.
+mu X.
 (
-  [!placeItem(upgrade)]X
-  &&
-  <true>true
+  nu Y.
+  (
+    [!(
+      exists b:Belt . stopBelt(b) ||
+      exists b:Belt . startBelt(b) ||
+      exists b:Belt . emergencyStopBelt(b) ||
+      alarm ||
+      unalarm ||
+      placeItem(upgrade)
+    )] X
+    &&
+    [
+      exists b:Belt . stopBelt(b) ||
+      exists b:Belt . startBelt(b) ||
+      exists b:Belt . emergencyStopBelt(b) ||
+      alarm ||
+      unalarm
+    ] Y
+    &&
+    <true>true
+  )
 )
