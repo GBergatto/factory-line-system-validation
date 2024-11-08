@@ -32,23 +32,23 @@ act
 
 proc Arm(isHoldingItem: Bool) =
   (isHoldingItem)
-    -> deliverItem(upgrade) . placeItem(upgrade) . Arm(false)
-    <> (pickFrom(input) + pickFrom(reset)) . Arm(true);
+    -> deliverItem(upgrade) . placeItem(upgrade) . sync1s . Arm(false)
+    <> ((pickFrom(input) . sync2r) + (pickFrom(reset) . sync2r)) . Arm(true);
 
 
 act
   start, stop, emergencyStop, receiveItem, yield, itemDetected: Belt;
 
 proc ConveyorBelt(b: Belt, isMoving: Bool, hasItem: Bool, itemAtEnd: Bool) =
-  emergencyStop(b) . ConveyorBelt(b, false, hasItem, itemAtEnd) +
+  emergencyStop(b) . emergencyStopBelt(b) . ConveyorBelt(b, false, hasItem, itemAtEnd) +
   ((!isMoving && !itemAtEnd)
     -> start(b) . startBelt(b) . ConveyorBelt(b, true, hasItem, itemAtEnd)) +
   ((isMoving)
     -> stop(b) . stopBelt(b) . ConveyorBelt(b, false, hasItem, itemAtEnd)) +
   ((!isMoving && !hasItem)
-    -> receiveItem(b) . ConveyorBelt(b, isMoving, true, itemAtEnd)) +
+    -> receiveItem(b) . sync2s . ConveyorBelt(b, isMoving, true, itemAtEnd)) +
   ((!isMoving && itemAtEnd)
-    -> yield(b) . placeItem(b) . ConveyorBelt(b, isMoving, false, false)) +
+    -> yield(b) . pickItem(b) . sync1r . ConveyorBelt(b, isMoving, false, false)) +
   ((isMoving && hasItem && !itemAtEnd)
     -> itemDetected(b) . ConveyorBelt(b, isMoving, hasItem, true));
 
@@ -57,10 +57,10 @@ act
   acceptItem, trashItem, resetItem, itemOk, itemDefect;
 
 proc Checker(n: Nat) =
-  pickFrom(upgrade) . pickItem(upgrade) . itemOk . acceptItem . moveToOutput . Checker(1) +
+  pickFrom(upgrade) . sync2r . itemOk . acceptItem . moveToOutput . Checker(1) +
   (n == N(0))
-    -> pickFrom(upgrade) . itemDefect . trashItem . moveToTrash . Checker(1)
-    <> pickFrom(upgrade) . itemDefect . resetItem . moveToReset . deliverItem(reset) . placeItem(reset) . Checker(n + 1);
+    -> pickFrom(upgrade) . sync2r . itemDefect . trashItem . moveToTrash . Checker(1)
+    <> pickFrom(upgrade) . sync2r . itemDefect . resetItem . moveToReset . deliverItem(reset) . placeItem(reset) . sync1s . Checker(n + 1);
 
 
 act
@@ -68,14 +68,16 @@ act
   sync_moveToOutput, sync_moveToTrash, sync_moveToReset;
   startBelt, stopBelt, emergencyStopBelt, pickItem, placeItem: Belt;
   sync_startBelt, sync_stopBelt, sync_emergencyStopBelt, sync_pickItem, sync_placeItem: Belt;
+  sync1r, sync2r, syncr, sync1s, sync2s, syncs;
 
 init
-%  hide
-%  (
-%    {
-%      sync_startBelt, sync_stopBelt, sync_emergencyStopBelt, sync_pickItem, sync_placeItem,
-%      sync_moveToOutput, sync_moveToTrash, sync_moveToReset
-%    },
+  hide
+  (
+    {
+      sync_startBelt, sync_stopBelt, sync_emergencyStopBelt, sync_pickItem, sync_placeItem,
+      sync_moveToOutput, sync_moveToTrash, sync_moveToReset,
+      syncr, syncs
+    },
 
     allow
     (
@@ -86,7 +88,8 @@ init
         sync_moveToOutput, sync_moveToTrash, sync_moveToReset,
         alarm, unalarm,
         itemDetected,
-        itemOk, itemDefect
+        itemOk, itemDefect,
+        syncr, syncs
       },
       
       comm
@@ -100,7 +103,10 @@ init
 
           safeOutput | acceptItem -> sync_moveToOutput,
           safeTrash | trashItem -> sync_moveToTrash,
-          safeReset | resetItem -> sync_moveToReset
+          safeReset | resetItem -> sync_moveToReset,
+
+          sync1r | sync2r -> syncr,
+          sync1s | sync2s -> syncs
         },
         ConveyorBelt(input, true, true, false) ||
         ConveyorBelt(reset, false, false, false) ||
@@ -109,5 +115,5 @@ init
         Checker(1) ||
         EmergencyHandler(normal)
       )
-%    )
+    )
   );

@@ -12,6 +12,7 @@ mu X.
       exists b:Belt . emergencyStopBelt(b) ||
       alarm ||
       unalarm ||
+      tau ||
       placeItem(upgrade)
     )] X
     &&
@@ -20,7 +21,8 @@ mu X.
       exists b:Belt . startBelt(b) ||
       exists b:Belt . emergencyStopBelt(b) ||
       alarm ||
-      unalarm
+      unalarm ||
+      tau
     ] Y
     &&
     <true>true
